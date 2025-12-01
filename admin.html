@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Reaper Bio Links</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            min-height: 100vh;
+        }
+
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.03;
+            z-index: 100;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        header {
+            margin-bottom: 40px;
+        }
+
+        nav {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 16px;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-link {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 10px 24px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: rgba(255, 255, 255, 0.95);
+        }
+
+        .admin-content {
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            background: linear-gradient(180deg, #ffffff 0%, rgba(255, 255, 255, 0.7) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .users-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .users-table th {
+            text-align: left;
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+            font-weight: 500;
+        }
+
+        .users-table td {
+            padding: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .users-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .badge-selector {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .badge-option {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .badge-option.selected {
+            background: rgba(59, 130, 246, 0.3);
+            border: 1px solid rgba(59, 130, 246, 0.5);
+        }
+
+        .badge-option input {
+            display: none;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .save-btn {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .save-btn:hover {
+            background: rgba(59, 130, 246, 0.5);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .error {
+            color: #ef4444;
+            padding: 16px;
+            background: rgba(239, 68, 68, 0.1);
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="grain"></div>
+    
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">Admin Dashboard</div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="dashboard.html" class="nav-link">My Dashboard</a>
+                    <a href="#" class="nav-link" onclick="logout()">Logout</a>
+                </div>
+            </nav>
+        </header>
+
+        <div class="admin-content">
+            <h1>Admin Panel</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalProfiles">0</div>
+                    <div class="stat-label">Total Profiles</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="adminUsers">0</div>
+                    <div class="stat-label">Admin Users</div>
+                </div>
+            </div>
+
+            <div id="loading" class="loading">
+                Loading user data...
+            </div>
+
+            <div id="error" class="error" style="display: none;"></div>
+
+            <div id="usersTable" style="display: none;">
+                <h2>User Management</h2>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Joined</th>
+                            <th>Badges</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersList">
+                        <!-- Users will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let authToken = localStorage.getItem('authToken');
+        let usersData = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!authToken) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
+            loadUsers();
+        });
+
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users', {
+                    headers: {
+                        'Authorization': authToken
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    usersData = data.users;
+                    displayUsers();
+                } else {
+                    if (response.status === 401 || response.status === 403) {
+                        localStorage.removeItem('authToken');
+                        window.location.href = 'login.html';
+                    } else {
+                        showError(data.error || 'Failed to load users');
+                    }
+                }
+            } catch (error) {
+                showError('Failed to connect to server');
+            }
+        }
+
+        function displayUsers() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('usersTable').style.display = 'block';
+            
+            // Update stats
+            document.getElementById('totalUsers').textContent = usersData.length;
+            document.getElementById('totalProfiles').textContent = usersData.filter(u => u.profile).length;
+            document.getElementById('adminUsers').textContent = usersData.filter(u => u.isAdmin).length;
+            
+            // Display users
+            const usersList = document.getElementById('usersList');
+            usersList.innerHTML = '';
+            
+            usersData.forEach(user => {
+                const row = document.createElement('tr');
+                
+                const badges = user.profile?.badges || [];
+                const badgeOptions = ['staff', 'certif', 'dev', 'premium', 'booster', 'bughunter', 'earlysupporter', 'graphic'];
+                
+                row.innerHTML = `
+                    <td>
+                        <strong>${user.username}</strong>
+                        ${user.isAdmin ? ' <span style="color: #ef4444;">(Admin)</span>' : ''}
+                    </td>
+                    <td>${user.email}</td>
+                    <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="badge-selector" id="badges-${user.username}">
+                            ${badgeOptions.map(badge => `
+                                <label class="badge-option ${badges.includes(badge) ? 'selected' : ''}">
+                                    <input type="checkbox" value="${badge}" ${badges.includes(badge) ? 'checked' : ''}>
+                                    ${badge}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </td>
+                    <td>
+                        <button class="action-btn save-btn" onclick="saveBadges('${user.username}')">Save</button>
+                        <a href="/${user.username}" target="_blank" class="action-btn">View</a>
+                    </td>
+                `;
+                
+                usersList.appendChild(row);
+                
+                // Add click handlers for badge selection
+                const badgeContainer = document.getElementById(`badges-${user.username}`);
+                badgeContainer.querySelectorAll('.badge-option').forEach(option => {
+                    option.addEventListener('click', function(e) {
+                        if (e.target.tagName === 'INPUT') return;
+                        const checkbox = this.querySelector('input');
+                        checkbox.checked = !checkbox.checked;
+                        this.classList.toggle('selected', checkbox.checked);
+                    });
+                });
+            });
+        }
+
+        async function saveBadges(username) {
+            const badgeContainer = document.getElementById(`badges-${username}`);
+            const checkboxes = badgeContainer.querySelectorAll('input[type="checkbox"]:checked');
+            const badges = Array.from(checkboxes).map(cb => cb.value);
+            
+            try {
+                const response = await fetch('/api/admin/badges', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': authToken,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, badges })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Badges updated successfully!');
+                    loadUsers(); // Refresh the list
+                } else {
+                    alert('Failed to update badges: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                alert('Failed to connect to server');
+            }
+        }
+
+        function showError(message) {
+            const errorElement = document.getElementById('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('authToken');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
