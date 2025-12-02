@@ -4,7 +4,7 @@
   "description": "Reaper Bio Links - The best free bio link website",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",  // This should match your actual server file
+    "start": "node server.js",
     "dev": "nodemon server.js"
   },
   "dependencies": {
@@ -17,7 +17,7 @@
     "nodemon": "^3.0.1"
   },
   "engines": {
-    "node": ">=18.0.0"  // Updated to match your requirement
+    "node": ">=18.0.0"
   },
   "author": "Reaper Bio Links",
   "license": "MIT"
